@@ -1,0 +1,34 @@
+PORTAL DO PROFESSOR — VERSÃO APRIMORADA SOBRE A BASE ORIGINAL
+EM DR. CUSTÓDIO DE PAULA RODRIGUES — ABRE CAMPO/MG
+
+ARQUIVOS
+- index.html: estrutura das telas e navegação.
+- style.css: estilos originais preservados + camada visual administrativa.
+- script.js: JavaScript original preservado, com proteção adicional no armazenamento e confirmação de restauração.
+- portal-extensions.js: módulos adicionais de turmas, cadastro ampliado, importação e exportação de estudantes, metadados de avaliação e filtros por turma.
+
+COMO ABRIR
+1. Extraia todos os arquivos para a mesma pasta.
+2. Abra index.html em um navegador moderno (Chrome, Edge ou Firefox).
+3. Para importar Excel (.xlsx/.xls), é necessária conexão com a internet para carregar a biblioteca SheetJS usada pelo projeto. CSV funciona sem essa biblioteca.
+4. Não renomeie nem separe os arquivos JavaScript e CSS da página HTML.
+
+DADOS E BACKUP
+Os dados ficam no LocalStorage do navegador e dispositivo atual. Não há sincronização automática entre aparelhos ou usuários. Use a opção Backup e restauração regularmente.
+
+VALIDAÇÕES REALIZADAS NESTA ENTREGA
+- Sintaxe JavaScript validada com node --check nos dois arquivos JS.
+- Conferência dos caminhos relativos de CSS e JavaScript referenciados no HTML.
+- Conferência dos exemplos de arredondamento solicitados: 24,6→24,5; 24,1→24; 14,9→15; 11,7→11,5; 15,5→15,5; 23,0→23.
+- Verificação estática dos módulos e dos principais identificadores HTML.
+
+LIMITES IMPORTANTES
+- O projeto recebido já possuía telas e fluxos de notas, frequência semanal, recuperação, fechamento, estatísticas e boletins. Eles foram mantidos como base.
+- O cadastro ampliado agora mantém turmas, situação, matrícula sequencial para novos registros (a partir de 10000), importação com prévia e exportação CSV. O filtro por turma foi acrescentado aos principais fluxos centrais de lançamento e consulta.
+- A frequência herdada da base continua organizada pela grade semanal e pelos bimestres; ainda não foi convertida em calendário diário com feriados/dias não letivos individualizados.
+- A aplicação permanece local e não oferece sincronização multiusuário/servidor.
+- As imagens institucionais (logo do Portal e brasão oficial) não vieram junto com os três arquivos de código recebidos. O HTML original referencia brasao.png; se o arquivo não existir na pasta, a imagem é ocultada para evitar ícone quebrado. Adicione o brasão oficial com esse nome para exibi-lo.
+- A tentativa de renderização automatizada em Chromium não concluiu neste ambiente; portanto, não afirmo teste visual completo em celular e computador nem teste operacional ponta a ponta de cada fluxo.
+
+RECOMENDAÇÃO
+Antes de usar com dados reais, abra uma cópia de teste, importe uma planilha pequena, confira a turma atribuída, faça um lançamento fictício e exporte um backup. Mantenha os arquivos originais guardados.
