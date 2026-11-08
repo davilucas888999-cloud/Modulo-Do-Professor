@@ -12,7 +12,7 @@ const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??
 function ensure(){
  if(typeof db==='undefined'||!db||typeof db!=='object')return;
  if(!Array.isArray(db.turmas))db.turmas=TURMAS_PADRAO.map((t,i)=>({id:'turma_'+(i+1),ano:t[0],codigo:t[1],turno:t[2],nome:`${t[0]} - ${t[1]} - ${t[2]}`}));
- const usadas=(db.alunosCadastro||[]).map(a=>Number(a.matricula)).filter(n=>Number.isInteger(n)&&n>=10000&&n<100000);const proximaSegura=Math.max(10000,...usadas.map(n=>n+1));if(!Number.isInteger(db.proximaMatricula)||db.proximaMatricula<proximaSegura)db.proximaMatricula=proximaSegura;
+ const usadas=(db.alunosCadastro||[]).map(a=>Number(a.matricula)).filter(n=>Number.isInteger(n)&&n>=11111&&n<1000000);const proximaSegura=Math.max(11111,...usadas.map(n=>n+1));if(!Number.isInteger(db.proximaMatricula)||db.proximaMatricula<11111)db.proximaMatricula=proximaSegura;else db.proximaMatricula=Math.max(db.proximaMatricula,proximaSegura);
  if(!Array.isArray(db.alunosCadastro))db.alunosCadastro=[];
  db.alunosCadastro.forEach(a=>{
    if(!a.turmaId)a.turmaId=db.turmas.find(t=>t.codigo==='800')?.id||db.turmas[0]?.id||'';

@@ -40,10 +40,10 @@
                 <li onclick="portalV2AbrirResultadoAvaliacao()"><i class="fas fa-pen-to-square"></i> Resultado da Avaliação</li>
                 <li onclick="portalV2AbrirResultadoEtapa()"><i class="fas fa-chart-column"></i> Resultado da Etapa</li>
                 <li class="nav-section-label">GESTÃO ESCOLAR</li>
-                <li onclick="portalAbrirTurmas()"><i class="fas fa-school"></i> Turmas</li>
+                <li onclick="portalAbrirTurmas()"><i class="fas fa-school"></i> TURMAS</li>
+                <li onclick="portalV2AbrirDisciplinas()"><i class="fas fa-book"></i> DISCIPLINAS</li>
                 <li onclick="abrirCadastroAlunos()"><i class="fas fa-user-graduate"></i> Alunos</li>
                 <li onclick="portalV2AbrirHorario()"><i class="fas fa-calendar-days"></i> Horário Escolar</li>
-                <li onclick="portalV2AbrirDisciplinas()"><i class="fas fa-book"></i> Cadastro de Disciplina</li>
                 <li onclick="navigate('boletim-individual')"><i class="fas fa-file-lines"></i> Boletins</li>
                 <li class="nav-section-label">CONFIGURAÇÕES</li>
                 <li onclick="portalAbrirConfiguracoes()"><i class="fas fa-sliders"></i> Configurações gerais</li>
@@ -55,7 +55,7 @@
             </ul>
         </nav>
         <div class="sidebar-footer">
-            <span>Portal do Professor 2026 • Versão Responsiva</span>
+            <span>PORTAL DO PROFESSOR • VERSÃO 3.0.0</span>
         </div>
     </div>
 
@@ -100,7 +100,7 @@
 
             <div class="portal-toolbar">
                 <button type="button" class="btn-secondary-action" onclick="portalAbrirImportacao()"><i class="fas fa-file-import"></i> IMPORTAR ALUNOS</button>
-                <button type="button" class="btn-secondary-action" onclick="portalAbrirExportacaoAlunos()"><i class="fas fa-file-csv"></i> EXPORTAR ALUNOS</button>
+                <button type="button" class="btn-secondary-action" onclick="portalExportarAlunosCSV()"><i class="fas fa-file-csv"></i> EXPORTAR ALUNOS</button>
             </div>
             <div class="card-box student-registration-card">
                 <form id="form-cadastro-aluno" onsubmit="cadastrarNovoAluno(event)">
@@ -562,7 +562,7 @@
         <div id="screen-portal-config" class="screen">
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar ao Início</button>
             <div class="table-meta-header"><h3><i class="fas fa-sliders"></i> Configurações Gerais</h3><p class="sub-meta">Parâmetros institucionais e informações de armazenamento.</p></div>
-            <div class="card-box"><p><strong>INSTITUIÇÃO:</strong> EM DR. CUSTÓDIO DE PAULA RODRIGUES</p><p><strong>MUNICÍPIO:</strong> ABRE CAMPO – MINAS GERAIS</p><p><strong>ARMAZENAMENTO:</strong> LocalStorage do navegador e dispositivo atual.</p><p class="sub-meta" style="margin-top:12px">Os dados não são sincronizados automaticamente entre dispositivos. Exporte backups regularmente e mantenha uma cópia segura.</p><div class="portal-form-actions"><button class="btn-submit-action" onclick="exportBackup()"><i class="fas fa-download"></i> GERAR BACKUP COMPLETO</button></div></div>
+            <div class="card-box"><p><strong>INSTITUIÇÃO:</strong> EM DR. CUSTÓDIO DE PAULA RODRIGUES</p><p><strong>MUNICÍPIO:</strong> ABRE CAMPO – MINAS GERAIS</p><p><strong>ARMAZENAMENTO:</strong> LocalStorage do navegador e dispositivo atual.</p><p class="sub-meta" style="margin-top:12px">Os dados não são sincronizados automaticamente entre dispositivos. Exporte backups regularmente e mantenha uma cópia segura.</p><div class="portal-form-actions"><div class="portal-form-actions"><button class="btn-submit-action" onclick="exportBackup()"><i class="fas fa-download"></i> EXPORTAR TODOS OS DADOS (JSON)</button><button type="button" class="btn-secondary-action" onclick="document.getElementById('file-upload-input').click()"><i class="fas fa-upload"></i> IMPORTAR DADOS DO SISTEMA</button></div></div></div>
         </div>
 
         <!-- TELA 9: MANUTENÇÃO E BACKUP -->
@@ -633,6 +633,7 @@
                 </div>
             </form>
         </div>
+        <div id="portal-system-version">PORTAL DO PROFESSOR • VERSÃO 3.0.0</div>
     </div>
 
     <!-- MODAL DE INSTRUÇÕES DE AJUDA -->

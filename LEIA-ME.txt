@@ -47,3 +47,6 @@ VALIDAÇÕES REALIZADAS NESTA ENTREGA
 - Conferência dos caminhos relativos dos arquivos CSS e JavaScript no HTML.
 - Conferência estática dos identificadores das telas e dos pontos de entrada da navegação.
 - Não foi possível concluir teste visual automatizado em navegador nesta execução. Portanto, os fluxos precisam ser conferidos em uma cópia de teste antes do uso com dados reais.
+
+
+VERSÃO 3.0.0 — acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
