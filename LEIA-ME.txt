@@ -1,34 +1,49 @@
-PORTAL DO PROFESSOR — VERSÃO APRIMORADA SOBRE A BASE ORIGINAL
+PORTAL DO PROFESSOR — ATUALIZAÇÃO ADMINISTRATIVA V2
 EM DR. CUSTÓDIO DE PAULA RODRIGUES — ABRE CAMPO/MG
 
-ARQUIVOS
+ARQUIVOS DO PACOTE
 - index.html: estrutura das telas e navegação.
-- style.css: estilos originais preservados + camada visual administrativa.
-- script.js: JavaScript original preservado, com proteção adicional no armazenamento e confirmação de restauração.
-- portal-extensions.js: módulos adicionais de turmas, cadastro ampliado, importação e exportação de estudantes, metadados de avaliação e filtros por turma.
+- style.css: estilos originais preservados e camada visual administrativa.
+- script.js: motor original do sistema, com proteção adicional de armazenamento e restauração.
+- portal-extensions.js: extensão de turmas, estudantes, importação/exportação e compatibilidade com os fluxos anteriores.
+- portal-v2.js: novos módulos de frequência por calendário, avaliações, resultados, períodos letivos, disciplinas e horário por turma.
 
-COMO ABRIR
-1. Extraia todos os arquivos para a mesma pasta.
-2. Abra index.html em um navegador moderno (Chrome, Edge ou Firefox).
-3. Para importar Excel (.xlsx/.xls), é necessária conexão com a internet para carregar a biblioteca SheetJS usada pelo projeto. CSV funciona sem essa biblioteca.
-4. Não renomeie nem separe os arquivos JavaScript e CSS da página HTML.
+INSTALAÇÃO
+1. Extraia todos os arquivos do ZIP para a mesma pasta.
+2. Abra index.html em navegador moderno (Chrome, Edge ou Firefox).
+3. Mantenha os nomes dos arquivos e todos na mesma pasta.
+4. Para importar/exportar Excel (.xlsx), é necessária conexão com a internet para carregar a biblioteca SheetJS. CSV e backup JSON não dependem dessa biblioteca.
 
-DADOS E BACKUP
-Os dados ficam no LocalStorage do navegador e dispositivo atual. Não há sincronização automática entre aparelhos ou usuários. Use a opção Backup e restauração regularmente.
+FUNCIONALIDADES ADICIONADAS NESTA VERSÃO
+- Início: resumo da quantidade de estudantes ativos por turma.
+- Cadastro de estudantes: botão NOVO em janela própria, filtros por matrícula, nome, nascimento, data de matrícula e turma; exportação CSV ou Excel; importação de planilhas com prévia e confirmação.
+- Matrículas novas: sequência numérica a partir de 10000, sem reutilizar números já atribuídos.
+- Cadastro de turmas: janela NOVO/EDIÇÃO e filtros por código, ano e turno.
+- Cadastro de disciplinas: cadastro por código/nome e associação opcional a turmas.
+- Cadastro de avaliações: nome, etapa, valor, média automática de 60%, turma e disciplina; filtros instantâneos por coluna; edição ao clicar no nome.
+- Resultado da avaliação: lançamento da nota, recuperação e comparecimento; nota original, personalizada e oficial; gravação explícita pelo botão SALVAR.
+- Resultado por etapa: notas de avaliações, recuperação da etapa, faltas por disciplina e resultado final.
+- Frequência: lançamento mensal, semanal ou diário, dentro das datas configuradas para cada bimestre; caixa marcada = presente e desmarcada = falta.
+- Horário: grade de cinco aulas por dia da semana, específica por turma. A apuração de faltas por disciplina considera quantas aulas daquela disciplina estão cadastradas no dia.
+- Configurações: datas de início e fim dos quatro bimestres.
+- Exportação de dados: backup completo em JSON, incluindo os novos cadastros e lançamentos.
+
+REGRAS DE CÁLCULO IMPLEMENTADAS NOS NOVOS MÓDULOS
+- Recuperação por avaliação: só é aplicada quando a nota original fica abaixo de 60% do valor da avaliação. Se a recuperação atingir pelo menos 60% do valor, a nota oficial passa a ser 60% do valor; caso contrário, fica a maior entre a nota original e a recuperação.
+- Recuperação da etapa: quando a nota das avaliações fica abaixo de 15/25, a recuperação é considerada. Se atingir 15 pontos, a nota oficial da etapa passa a 15; caso contrário, prevalece a maior entre a nota original e a recuperação.
+- Arredondamento: decimal de 0,0 a 0,2 arredonda para baixo; 0,3 a 0,7 para meio ponto; 0,8 a 0,9 para o próximo inteiro.
+
+ATENÇÃO SOBRE OS DADOS
+- O armazenamento continua sendo LocalStorage do navegador/dispositivo atual. Não há sincronização automática entre computadores ou celulares.
+- Configure as datas dos bimestres antes de lançar frequência por mês/semana/dia.
+- Cadastre o horário de cada turma antes de usar os totais de faltas. Sem horário, o sistema avisa que o cálculo não será completo.
+- A frequência nova é armazenada por data. Relatórios legados que consultam o antigo formato semanal não são automaticamente convertidos para o novo calendário.
+- O novo cadastro de avaliação/resultados utiliza seus próprios registros no banco. As telas antigas de lançamento de atividades foram preservadas para manter compatibilidade, mas não há migração automática de todas as avaliações antigas para a nova listagem.
+- Para preservar dados, exporte regularmente o backup JSON. A importação de backup substitui os dados locais após confirmação.
+- O brasão/logo oficial não foi fornecido com os arquivos de código. Se brasao.png não estiver na pasta, o espaço da imagem será ocultado.
 
 VALIDAÇÕES REALIZADAS NESTA ENTREGA
-- Sintaxe JavaScript validada com node --check nos dois arquivos JS.
-- Conferência dos caminhos relativos de CSS e JavaScript referenciados no HTML.
-- Conferência dos exemplos de arredondamento solicitados: 24,6→24,5; 24,1→24; 14,9→15; 11,7→11,5; 15,5→15,5; 23,0→23.
-- Verificação estática dos módulos e dos principais identificadores HTML.
-
-LIMITES IMPORTANTES
-- O projeto recebido já possuía telas e fluxos de notas, frequência semanal, recuperação, fechamento, estatísticas e boletins. Eles foram mantidos como base.
-- O cadastro ampliado agora mantém turmas, situação, matrícula sequencial para novos registros (a partir de 10000), importação com prévia e exportação CSV. O filtro por turma foi acrescentado aos principais fluxos centrais de lançamento e consulta.
-- A frequência herdada da base continua organizada pela grade semanal e pelos bimestres; ainda não foi convertida em calendário diário com feriados/dias não letivos individualizados.
-- A aplicação permanece local e não oferece sincronização multiusuário/servidor.
-- As imagens institucionais (logo do Portal e brasão oficial) não vieram junto com os três arquivos de código recebidos. O HTML original referencia brasao.png; se o arquivo não existir na pasta, a imagem é ocultada para evitar ícone quebrado. Adicione o brasão oficial com esse nome para exibi-lo.
-- A tentativa de renderização automatizada em Chromium não concluiu neste ambiente; portanto, não afirmo teste visual completo em celular e computador nem teste operacional ponta a ponta de cada fluxo.
-
-RECOMENDAÇÃO
-Antes de usar com dados reais, abra uma cópia de teste, importe uma planilha pequena, confira a turma atribuída, faça um lançamento fictício e exporte um backup. Mantenha os arquivos originais guardados.
+- node --check executado com sucesso em script.js, portal-extensions.js e portal-v2.js.
+- Conferência dos caminhos relativos dos arquivos CSS e JavaScript no HTML.
+- Conferência estática dos identificadores das telas e dos pontos de entrada da navegação.
+- Não foi possível concluir teste visual automatizado em navegador nesta execução. Portanto, os fluxos precisam ser conferidos em uma cópia de teste antes do uso com dados reais.

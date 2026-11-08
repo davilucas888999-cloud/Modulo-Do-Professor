@@ -35,14 +35,15 @@
             <ul class="portal-nav">
                 <li onclick="navigate('home')"><i class="fas fa-house"></i> INÍCIO</li>
                 <li class="nav-section-label">ETAPA</li>
-                <li onclick="abrirLancamentoFaltas()"><i class="fas fa-calendar-check"></i> Lançamento de Frequência</li>
-                <li onclick="abrirLancamentos()"><i class="fas fa-clipboard-list"></i> Cadastro de Avaliação</li>
-                <li onclick="abrirLancamentos()"><i class="fas fa-pen-to-square"></i> Resultado da Avaliação</li>
-                <li onclick="abrirNotaFinalDisciplina()"><i class="fas fa-chart-column"></i> Resultado da Etapa</li>
+                <li onclick="portalV2AbrirFrequencia()"><i class="fas fa-calendar-check"></i> Lançamento de Frequência</li>
+                <li onclick="portalV2AbrirAvaliacoes()"><i class="fas fa-clipboard-list"></i> Cadastro de Avaliação</li>
+                <li onclick="portalV2AbrirResultadoAvaliacao()"><i class="fas fa-pen-to-square"></i> Resultado da Avaliação</li>
+                <li onclick="portalV2AbrirResultadoEtapa()"><i class="fas fa-chart-column"></i> Resultado da Etapa</li>
                 <li class="nav-section-label">GESTÃO ESCOLAR</li>
                 <li onclick="portalAbrirTurmas()"><i class="fas fa-school"></i> Turmas</li>
                 <li onclick="abrirCadastroAlunos()"><i class="fas fa-user-graduate"></i> Alunos</li>
-                <li onclick="abrirCadastroAulas()"><i class="fas fa-calendar-days"></i> Horário Escolar</li>
+                <li onclick="portalV2AbrirHorario()"><i class="fas fa-calendar-days"></i> Horário Escolar</li>
+                <li onclick="portalV2AbrirDisciplinas()"><i class="fas fa-book"></i> Cadastro de Disciplina</li>
                 <li onclick="navigate('boletim-individual')"><i class="fas fa-file-lines"></i> Boletins</li>
                 <li class="nav-section-label">CONFIGURAÇÕES</li>
                 <li onclick="portalAbrirConfiguracoes()"><i class="fas fa-sliders"></i> Configurações gerais</li>
@@ -99,7 +100,7 @@
 
             <div class="portal-toolbar">
                 <button type="button" class="btn-secondary-action" onclick="portalAbrirImportacao()"><i class="fas fa-file-import"></i> IMPORTAR ALUNOS</button>
-                <button type="button" class="btn-secondary-action" onclick="portalExportarAlunosCSV()"><i class="fas fa-file-csv"></i> EXPORTAR ALUNOS</button>
+                <button type="button" class="btn-secondary-action" onclick="portalAbrirExportacaoAlunos()"><i class="fas fa-file-csv"></i> EXPORTAR ALUNOS</button>
             </div>
             <div class="card-box student-registration-card">
                 <form id="form-cadastro-aluno" onsubmit="cadastrarNovoAluno(event)">
@@ -681,6 +682,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="script.js"></script>
     <script src="portal-extensions.js"></script>
+    <script src="portal-v2.js"></script>
 
     <!-- Estrutura reservada para expansão responsiva do Portal do Professor. -->
     <!-- Todos os lançamentos permanecem no fluxo principal da página. -->
