@@ -109,9 +109,10 @@ AJUSTE VISUAL DO BOLETIM — REVISÃO DA VERSÃO 4.0.0
 - As regras de cálculo, a prevalência da nota personalizada e os dados do sistema foram preservados.
 
 
-VERSÃO 4.1.0 — AVALIAÇÕES E BOLETIM
+VERSÃO 4.1.1 — CORREÇÕES DE SALVAMENTO
 - Cadastro de avaliações com seleção múltipla de turmas e disciplinas em caixas lado a lado. Cada combinação turma/disciplina gera uma linha independente, permitindo edição individual.
 - Lançamento de nota personalizada liberado mesmo quando não há avaliações cadastradas; nesse cenário, a grade exibe apenas Nota Personalizada e Resultados.
-- Após salvar resultados, a grade da turma/disciplina selecionada é atualizada imediatamente, sem exigir troca de turma para recarregar os dados.
+- Após salvar resultados ou recuperações, a tela permanece no módulo atual, fecha janelas abertas, preserva turma/disciplina/bimestre selecionados e atualiza a grade sem exigir troca de turma.
+- Notas personalizadas e notas de recuperação são validadas entre 0 e 25 antes de serem gravadas; valores inválidos não são truncados silenciosamente.
 - Boletim individual reconstruído em A4, com cabeçalho institucional, identificação do estudante, tabela acadêmica de 12 colunas, acompanhamento do responsável, orientações e observações.
 - Preservados os dados essenciais, a regra de nota personalizada prevalecendo sobre a nota de avaliações e o destaque em vermelho para notas inferiores a 60%.
