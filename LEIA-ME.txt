@@ -82,3 +82,13 @@ IDENTIDADE E LIMPEZA — VERSÃO 3.0.4
 - Brasão de Abre Campo aplicado no menu, cabeçalho e boletim PDF.
 - Logo Portal do Professor aplicada no cabeçalho da tela inicial.
 - Na primeira abertura desta revisão, todos os alunos cadastrados e os lançamentos individuais vinculados são removidos. Turmas, disciplinas e configurações gerais são preservadas.
+
+
+ATUALIZAÇÃO DE AJUSTES — V 3.0.4
+- O boletim individual agora identifica a turma e o ano de escolaridade a partir do cadastro de cada estudante, sem usar a turma fixa 8º ANO - 800.
+- As notas abaixo de 60% do valor máximo ficam destacadas em vermelho nos resultados das avaliações, resultados por etapa e no boletim PDF.
+- O cadastro de avaliações permite excluir uma avaliação, com confirmação e remoção dos resultados vinculados a ela.
+- A tela de boletins ganhou filtro por turma e busca por nome do estudante.
+- É possível exportar os boletins filtrados em um PDF e baixar um ZIP com um PDF separado para cada turma.
+- Os nomes dos estudantes e das turmas são apresentados em ordem alfabética.
+- O boletim passa a considerar as notas do módulo novo de avaliações quando houver avaliações cadastradas para a turma, disciplina e bimestre.

@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body class="light-mode">
 
@@ -145,13 +146,14 @@
                 <h3>Boletim de Aproveitamento Individual</h3>
                 <p class="sub-meta">Gere e visualize o rendimento unificado de todas as disciplinas do ano.</p>
                 
-                <div style="margin-top: 15px; margin-bottom: 5px;">
-                    <button class="btn-submit-action" onclick="exportarTodosBoletinsPDF()" style="background-color: #d4af37; color: #0f172a; font-weight: 800;">
-                        <i class="fas fa-file-pdf"></i> Exportar Todos os Boletins (1 por Aluno)
-                    </button>
+                <div class="portal-form-grid" style="margin-top:15px;margin-bottom:10px;">
+                    <div class="input-group"><label for="filtro-turma-boletim">FILTRAR POR TURMA</label><select id="filtro-turma-boletim" onchange="renderBoletimIndividualList()"><option value="">TODAS AS TURMAS</option></select></div>
+                    <div class="input-group"><label for="search-aluno-boletim">LOCALIZAR ALUNO</label><input type="text" class="search-box-input" id="search-aluno-boletim" placeholder="Pesquisar pelo nome..." oninput="renderBoletimIndividualList()"></div>
                 </div>
-                
-                <input type="text" class="search-box-input" id="search-aluno-boletim" placeholder="🔍 Pesquisar estudante..." onkeyup="filterTable('table-boletim-corpo', this.value)">
+                <div class="portal-form-actions" style="flex-wrap:wrap;">
+                    <button class="btn-submit-action" onclick="exportarTodosBoletinsPDF()" style="background-color:#d4af37;color:#0f172a;font-weight:800;"><i class="fas fa-file-pdf"></i> EXPORTAR ALUNOS FILTRADOS</button>
+                    <button class="btn-submit-action" onclick="exportarBoletinsPorTurma()"><i class="fas fa-file-archive"></i> EXPORTAR TODAS AS TURMAS SEPARADAMENTE</button>
+                </div>
             </div>
 
             <div class="table-responsive-container">

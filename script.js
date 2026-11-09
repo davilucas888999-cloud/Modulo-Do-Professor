@@ -6,7 +6,7 @@
 const CONFIG = {
     schoolName: "EM DR CUSTÓDIO DE PAULA RODRIGUES",
     schoolNameFull: "ESCOLA MUNICIPAL DR. CUSTÓDIO DE PAULA RODRIGUES",
-    turmaName: "8º ANO 800",
+    turmaName: "TURMA NÃO DEFINIDA",
     ano: 2026,
     limitPoints: 25.00,
     passingScorePct: 0.60 // Média institucional de 60% para definição das cores
@@ -137,7 +137,7 @@ function inicializarCadastroAlunos() {
             a.matricula = gerarNumeroMatricula(ano, index + 1);
         });
     }
-    ALUNOS = db.alunosCadastro.map(a => a.nome);
+    ALUNOS = db.alunosCadastro.map(a => a.nome).sort((a,b)=>a.localeCompare(b, "pt-BR"));
     saveStorage();
 }
 
@@ -2164,28 +2164,57 @@ function cleanAllSystemData() {
  * MÓDULO: BOLETIM INDIVIDUAL
  ******************************************************************************/
 
+function obterTurmaCadastroAluno(aluno) {
+    const cadastro = getCadastroAluno(aluno);
+    const turma = (db.turmas || []).find(t => t.id === cadastro.turmaId);
+    if (!turma) return { nome: cadastro.turmaNome || 'TURMA NÃO INFORMADA', codigo: cadastro.turmaCodigo || '', ano: cadastro.anoEscolaridade || '' };
+    return { nome: turma.nome || `${turma.ano || ''} - ${turma.codigo || ''} - ${turma.turno || ''}`.trim(), codigo: turma.codigo || '', ano: turma.ano || '' };
+}
+
 function renderBoletimIndividualList() {
     const corpo = document.getElementById('table-boletim-corpo');
     if (!corpo) return;
+    const termo = (document.getElementById('search-aluno-boletim')?.value || '').trim().toLocaleUpperCase('pt-BR');
+    const turmaFiltro = document.getElementById('filtro-turma-boletim')?.value || '';
+    const registros = [...(db.alunosCadastro || [])]
+        .filter(a => !turmaFiltro || a.turmaId === turmaFiltro)
+        .filter(a => !termo || String(a.nome || '').toLocaleUpperCase('pt-BR').includes(termo))
+        .sort((a,b) => obterTurmaCadastroAluno(a.nome).nome.localeCompare(obterTurmaCadastroAluno(b.nome).nome,'pt-BR') || a.nome.localeCompare(b.nome,'pt-BR'));
     corpo.innerHTML = '';
-
-    ALUNOS.forEach(aluno => {
-        const tr = document.createElement('tr');
-        const ficha = obterFichaRendimentoAluno(aluno);
+    registros.forEach(cadastro => {
+        const aluno = cadastro.nome, ficha = obterFichaRendimentoAluno(aluno);
         const totais = DISCIPLINAS.map(m => ficha[m].totalAnual);
         const mediaGeral = totais.length ? totais.reduce((a,b)=>a+b,0) / (totais.length * 4) : 0;
-        const cadastro = getCadastroAluno(aluno);
-        tr.innerHTML = `
-            <td class="boletim-student-cell">
-                <div class="boletim-student-avatar"><i class="fas fa-user-graduate"></i></div>
-                <div><strong>${cadastro.matricula} • ${aluno}</strong><small>${CONFIG.turmaName} · Média geral: <b>${mediaGeral.toFixed(2)}</b></small></div>
-            </td>
-            <td class="boletim-actions-cell">
-                <button class="btn-action-atv boletim-pdf-btn" onclick="gerarBoletimPDF('${aluno}')"><i class="fas fa-file-pdf"></i><span>Gerar boletim</span></button>
-            </td>
-        `;
+        const turma = obterTurmaCadastroAluno(aluno), tr = document.createElement('tr');
+        tr.innerHTML = `<td class="boletim-student-cell"><div class="boletim-student-avatar"><i class="fas fa-user-graduate"></i></div><div><strong>${cadastro.matricula || ''} • ${aluno}</strong><small>${turma.nome} · Média geral: <b>${mediaGeral.toFixed(2)}</b></small></div></td><td class="boletim-actions-cell"><button class="btn-action-atv boletim-pdf-btn" onclick="gerarBoletimPDF(${JSON.stringify(aluno).replace(/"/g, '&quot;')})"><i class="fas fa-file-pdf"></i><span>Gerar boletim</span></button></td>`;
         corpo.appendChild(tr);
     });
+    if (!registros.length) corpo.innerHTML = '<tr><td colspan="2">NENHUM ALUNO ENCONTRADO.</td></tr>';
+}
+
+function notaEtapaBoletim(aluno, disciplina, bimestre) {
+    const cadastro=getCadastroAluno(aluno), turmaId=cadastro.turmaId;
+    const disciplinaKey=String(disciplina||'').trim().toLocaleUpperCase('pt-BR');
+    const avaliacoes=(db.avaliacoes||[]).filter(a=>Number(a.etapa)===Number(bimestre)&&a.turmaId===turmaId&&String(a.disciplina||'').toLocaleUpperCase('pt-BR')===disciplinaKey);
+    if(!avaliacoes.length) return getNotaFinalBimestre(disciplina,bimestre,aluno);
+    let total=0;
+    avaliacoes.forEach(a=>{
+        const r=(db.resultadosAvaliacoes||{})[`${a.id}::${aluno}`]||{};
+        if(r.compareceu===false)return;
+        const max=Number(a.valor)||0,orig=Math.max(0,Math.min(max,Number(r.nota)||0));
+        const recRaw=String(r.recuperacao??'').trim();
+        const rec=recRaw===''?null:Math.max(0,Math.min(max,Number(recRaw.replace(',','.'))||0));
+        const min=max*.6;
+        total+=(rec===null||orig>=min)?orig:(rec>=min?min:Math.max(orig,rec));
+    });
+    let nota=typeof arredondarMeioPonto==='function'?arredondarMeioPonto(total):Math.round(total*2)/2;
+    const key=`${bimestre}|${turmaId}|${disciplinaKey}|${aluno}`;
+    const recuperacao=(db.resultadosEtapa||{})[key];
+    if(nota<15&&recuperacao!==undefined&&String(recuperacao).trim()!==''){
+        const rec=Math.max(0,Math.min(25,Number(String(recuperacao).replace(',','.'))||0));
+        nota=rec>=15?15:Math.max(nota,rec);
+    }
+    return Number(nota.toFixed(1));
 }
 
 function obterFichaRendimentoAluno(aluno) {
@@ -2194,90 +2223,96 @@ function obterFichaRendimentoAluno(aluno) {
     const resultado=getResultadoFinalAluno(aluno);
     DISCIPLINAS.forEach(m=>{
         ficha[m]={somas:{1:0,2:0,3:0,4:0},faltas:{1:0,2:0,3:0,4:0},totalFaltas:0,totalAnual:0,media:0,situacao:''};
-        for(let b=1;b<=4;b++){ficha[m].somas[b]=getNotaFinalBimestre(m,b,aluno);ficha[m].faltas[b]=obterFaltasAlunoDisciplina(aluno,m,b);ficha[m].totalFaltas+=ficha[m].faltas[b];}
+        for(let b=1;b<=4;b++){
+            ficha[m].somas[b]=notaEtapaBoletim(aluno,m,b);
+            ficha[m].faltas[b]=obterFaltasAlunoDisciplina(aluno,m,b);
+            ficha[m].totalFaltas+=ficha[m].faltas[b];
+        }
+        const temAvaliacoesNovas=(db.avaliacoes||[]).some(a=>a.turmaId===getCadastroAluno(aluno).turmaId&&String(a.disciplina||'').toLocaleUpperCase('pt-BR')===String(m).toLocaleUpperCase('pt-BR'));
         const det=resultado.disciplinas[m];
-        ficha[m].totalAnual=det.final; ficha[m].media=ficha[m].totalAnual/4;
+        ficha[m].totalAnual=temAvaliacoesNovas?ficha[m].somas[1]+ficha[m].somas[2]+ficha[m].somas[3]+ficha[m].somas[4]:det.final;
+        ficha[m].media=ficha[m].totalAnual/4;
         if(!todosFechados)ficha[m].situacao='Em Curso';
-        else if(det.excessoFalta&&det.abaixoNota)ficha[m].situacao='Reprovado';
-        else if(det.recuperacao&&det.final<60)ficha[m].situacao='Recuperação';
+        else if(ficha[m].totalAnual<60)ficha[m].situacao='Recuperação';
         else ficha[m].situacao='Aprovado';
     });
     return ficha;
 }
 
 function adicionarPaginaBoletim(doc, aluno, imgLogo) {
-    // Boletim redesenhado em A4 paisagem para melhor leitura da tabela anual.
-    const W = 297, H = 210;
-    doc.setFillColor(248, 249, 250); doc.rect(0, 0, W, H, 'F');
-    doc.setDrawColor(43, 78, 128); doc.setLineWidth(1.2); doc.roundedRect(8, 8, W-16, H-16, 3, 3);
-    doc.setDrawColor(212, 175, 55); doc.setLineWidth(0.45); doc.roundedRect(10, 10, W-20, H-20, 2, 2);
-
-    if (imgLogo) doc.addImage(imgLogo, 'PNG', 16, 16, 22, 22);
-    doc.setFont('helvetica','bold'); doc.setTextColor(37,42,48); doc.setFontSize(13);
-    doc.text('PREFEITURA MUNICIPAL DE ABRE CAMPO', 45, 20);
-    doc.setFontSize(8.5); doc.setTextColor(90,100,110); doc.text('SECRETARIA MUNICIPAL DE EDUCAÇÃO', 45, 25);
-    doc.setFontSize(10.5); doc.setTextColor(43,78,128); doc.text(CONFIG.schoolNameFull, 45, 31);
-
-    doc.setFillColor(43,78,128); doc.roundedRect(15, 40, 267, 13, 2, 2, 'F');
-    doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(255,255,255);
-    doc.text('BOLETIM DE RENDIMENTO ESCOLAR', 22, 48.5);
-    doc.setFontSize(8); doc.text(`ANO LETIVO ${CONFIG.ano}`, 275, 48.5, {align:'right'});
-
-    const cadastro = getCadastroAluno(aluno);
-    doc.setFillColor(255,255,255); doc.setDrawColor(210,216,222); doc.setLineWidth(.35); doc.roundedRect(15,57,267,22,2,2,'FD');
-    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(95,105,115);
-    doc.text('ESTUDANTE',22,65); doc.text('MATRÍCULA',170,65); doc.text('TURMA',225,65);
-    doc.setFontSize(10); doc.setTextColor(37,42,48); doc.text(aluno,22,72); doc.setFontSize(8.5); doc.text(String(cadastro.matricula),170,72); doc.text(CONFIG.turmaName,225,72);
-
-    const ficha = obterFichaRendimentoAluno(aluno);
-    const body = DISCIPLINAS.map(m=>{const f=ficha[m];return [m,f.somas[1].toFixed(1),String(f.faltas[1]),f.somas[2].toFixed(1),String(f.faltas[2]),f.somas[3].toFixed(1),String(f.faltas[3]),f.somas[4].toFixed(1),String(f.faltas[4]),f.totalAnual.toFixed(1),f.media.toFixed(1),String(f.totalFaltas),f.situacao];});
-    doc.autoTable({
-        startY:84, margin:{left:15,right:15}, head:[['COMPONENTE CURRICULAR','1º BIM.','FALT.','2º BIM.','FALT.','3º BIM.','FALT.','4º BIM.','FALT.','TOTAL ANUAL','MÉDIA','FALTAS','SITUAÇÃO']], body,
-        theme:'grid', tableWidth:'auto',
-        headStyles:{fillColor:[52,58,64],textColor:[255,255,255],fontStyle:'bold',fontSize:6.4,halign:'center',valign:'middle',cellPadding:2},
-        bodyStyles:{fontSize:6.8,textColor:[37,42,48],cellPadding:2.1,halign:'center',valign:'middle'},
-        alternateRowStyles:{fillColor:[247,248,249]},
-        columnStyles:{0:{halign:'left',fontStyle:'bold',cellWidth:54},1:{cellWidth:18},2:{cellWidth:13},3:{cellWidth:18},4:{cellWidth:13},5:{cellWidth:18},6:{cellWidth:13},7:{cellWidth:18},8:{cellWidth:13},9:{cellWidth:21,fontStyle:'bold'},10:{cellWidth:20,fontStyle:'bold'},11:{cellWidth:16},12:{cellWidth:28,fontStyle:'bold'}},
-        didParseCell:data=>{if(data.section==='body'){if([1,3,5,7].includes(data.column.index)&&parseFloat(data.cell.raw)<15)data.cell.styles.textColor=[180,70,70];if(data.column.index===12){data.cell.styles.textColor=data.cell.raw==='Aprovado'?[47,107,80]:[176,0,0];}if([9,10].includes(data.column.index)&&parseFloat(data.cell.raw)<60){data.cell.styles.textColor=[176,0,0];}}}
-    });
-
-    const y = Math.min((doc.lastAutoTable?.finalY||155)+8, 174);
-    doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(90,100,110);
-    doc.text('Legenda: notas bimestrais valem até 25,0 pontos. Recuperações bimestrais são aplicadas conforme as regras do sistema.',15,y);
-    doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(37,42,48);
-    doc.text('ASSINATURAS',15,y+10);
-    const labels=['RESPONSÁVEL','PROFESSOR(A)','DIREÇÃO','SECRETARIA'];
-    labels.forEach((label,i)=>{const x=15+i*68;doc.setDrawColor(145,153,161);doc.setLineWidth(.3);doc.line(x,y+22,x+52,y+22);doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(90,100,110);doc.text(label,x+26,y+26,{align:'center'});});
-    doc.setFontSize(6.5); doc.text(`Emitido em ${new Date().toLocaleDateString('pt-BR')} · Portal do Professor`,282,197,{align:'right'});
+    // Modelo oficial: BOLETIM ESCOLAR - ANOS FINAIS, conforme PDF fornecido.
+    const W=210, H=297;
+    doc.setPage(doc.getNumberOfPages());
+    doc.setDrawColor(35,35,35); doc.setLineWidth(.25); doc.rect(7,7,196,283);
+    if(imgLogo) doc.addImage(imgLogo,'PNG',10,9,17,19);
+    doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text('BOLETIM ESCOLAR - ANOS FINAIS',105,14,{align:'center'});
+    doc.setFontSize(8.5); doc.text('SECRETARIA MUNICIPAL DE EDUCAÇÃO',105,20,{align:'center'});
+    doc.text('ABRE CAMPO - MG',105,25,{align:'center'});
+    doc.setFontSize(7.2); doc.setFont('helvetica','normal');
+    doc.text('EM DR CUSTÓDIO DE PAULA RODRIGUES',30,31);
+    doc.line(30,32,198,32);
+    doc.text('ESCOLA: EM DR CUSTÓDIO DE PAULA RODRIGUES',8,39);
+    doc.line(8,40,202,40);
+    doc.text('ENDEREÇO: POVOADO DA APARECIDA, SN, ABRE CAMPO, MINAS GERAIS',8,45);
+    doc.line(8,46,202,46);
+    const cadastro=getCadastroAluno(aluno);
+    const cell=(x,y,w,h,txt,opts={})=>{doc.rect(x,y,w,h);doc.setFont('helvetica',opts.bold?'bold':'normal');doc.setFontSize(opts.size||7);doc.text(String(txt??''),x+(opts.pad||1.5),y+h/2+1.8,{maxWidth:w-3,align:opts.align||'left'});};
+    cell(8,49,145,5.5,`Aluno: ${aluno}`);
+    cell(153,49,49,5.5,`Ano: ${CONFIG.ano}`);
+    cell(8,54.5,194,5,`Nível de ensino: Ensino Fundamental`);
+    cell(8,59.5,58,5,`Turno: MATUTINO`);
+    const turmaAluno = obterTurmaCadastroAluno(aluno);
+    cell(66,59.5,48,5,`Turma: ${turmaAluno.codigo || turmaAluno.nome}`);
+    cell(114,59.5,88,5,`Ano de escolaridade: ${turmaAluno.ano || 'Ensino Fundamental'}`);
+    cell(8,64.5,194,5.5,'RESULTADO DA AVALIAÇÃO DA APRENDIZAGEM',{bold:true,align:'center',size:8});
+    const ficha=obterFichaRendimentoAluno(aluno);
+    const rows=DISCIPLINAS.map(m=>{const f=ficha[m];return [m,f.somas[1].toFixed(1),String(f.faltas[1]),f.somas[2].toFixed(1),String(f.faltas[2]),f.somas[3].toFixed(1),String(f.faltas[3]),f.somas[4].toFixed(1),String(f.faltas[4]),String(f.totalFaltas),f.media.toFixed(1),f.situacao];});
+    doc.autoTable({startY:70,margin:{left:8,right:8},head:[['Disciplina','1º Bimestre','Faltas','2º Bimestre','Faltas','3º Bimestre','Faltas','4º Bimestre','Faltas','Total de faltas','Conceito final','Situação (Aprovado, EIR, PP)']],body:rows,theme:'grid',styles:{font:'helvetica',fontSize:6.1,cellPadding:1.5,lineWidth:.18,lineColor:[30,30,30],textColor:[0,0,0],halign:'center',valign:'middle'},headStyles:{fillColor:[255,255,255],textColor:[0,0,0],fontStyle:'bold',fontSize:5.8},
+        didParseCell:function(data){if(data.section!=='body')return;const idx=data.column.index,val=Number(String(data.cell.raw??'').replace(',','.'));if([1,3,5,7,10].includes(idx)&&Number.isFinite(val)&&val<15)data.cell.styles.textColor=[220,0,0];},
+        columnStyles:{0:{cellWidth:39,halign:'left'},1:{cellWidth:13},2:{cellWidth:10},3:{cellWidth:13},4:{cellWidth:10},5:{cellWidth:13},6:{cellWidth:10},7:{cellWidth:13},8:{cellWidth:10},9:{cellWidth:13},10:{cellWidth:15},11:{cellWidth:20}}});
+    let y=Math.max(doc.lastAutoTable.finalY+2,150);
+    cell(8,y,194,5,'RESPONSÁVEL PELO ALUNO',{bold:true,align:'center'});
+    y+=5; cell(8,y,48,6,'BIMESTRE',{align:'center'});cell(56,y,28,6,'DATA',{align:'center'});cell(84,y,118,6,'ASSINATURA',{align:'center'});
+    [['1º','25/04/2026'],['2º','08/07/2026'],['3º','29/09/2026'],['4º','16/12/2026']].forEach((r,i)=>{y+=6;cell(8,y,48,6,r[0],{align:'center'});cell(56,y,28,6,r[1],{align:'center'});cell(84,y,118,6,'');});
+    y+=9; doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('ORIENTAÇÕES:',10,y);y+=6;
+    doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.text('1 - Frequência mínima para promoção: 75%',10,y);y+=6;
+    doc.text('2 - Referenciais bimestrais para o 6º ao 9º ano:',10,y);y+=5;
+    doc.setFont('helvetica','normal');['1º BIMESTRE                 25.0','2º BIMESTRE                 25.0','3º BIMESTRE                 25.0','4º BIMESTRE                 25.0'].forEach(t=>{doc.text(t,12,y);y+=4;});
+    y+=3;doc.setFont('helvetica','bold');doc.text('EIR – Estudos Independentes de Recuperação:',10,y);doc.setFont('helvetica','normal');doc.text(' atividades de recuperação ao final do ano letivo para estudante que não atingiu 60% do aproveitamento anual. As atividades totalizam 100 pontos, sendo necessários 60 pontos para aprovação.',83,y,{maxWidth:115});y+=13;
+    doc.setFont('helvetica','bold');doc.text('PP – Progressão Parcial:',10,y);doc.setFont('helvetica','normal');doc.text(' permite promoção ao ano seguinte com pendências em disciplinas, conforme normas vigentes.',65,y,{maxWidth:133});
+    y=Math.min(Math.max(y+12,245),265);cell(8,y,194,31,'OBSERVAÇÕES:',{bold:true,size:7});
 }
 
-
+function obterLogoBoletim() {
+    let imgLogo=null; const imgEl=document.getElementById('img-brasao-base64');
+    if(imgEl&&imgEl.complete&&imgEl.naturalWidth){try{const canvas=document.createElement('canvas');canvas.width=imgEl.naturalWidth;canvas.height=imgEl.naturalHeight;canvas.getContext('2d').drawImage(imgEl,0,0);imgLogo=canvas.toDataURL('image/png');}catch(e){}}
+    return imgLogo;
+}
+function criarPDFBoletins(alunos) {
+    const {jsPDF}=window.jspdf,doc=new jsPDF('p','mm','a4'),imgLogo=obterLogoBoletim();
+    alunos.forEach((aluno,index)=>{if(index>0)doc.addPage();adicionarPaginaBoletim(doc,aluno,imgLogo);});
+    return doc;
+}
 function exportarTodosBoletinsPDF() {
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-        alert("Biblioteca PDF ainda não foi carregada. Tente novamente.");
-        return;
-    }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
-    let imgLogo = null;
-    const imgEl = document.getElementById('img-brasao-base64');
-    if (imgEl && imgEl.complete && imgEl.naturalWidth) {
-        try {
-            const canvas = document.createElement('canvas');
-            canvas.width = imgEl.naturalWidth; canvas.height = imgEl.naturalHeight;
-            canvas.getContext('2d').drawImage(imgEl, 0, 0);
-            imgLogo = canvas.toDataURL('image/png');
-        } catch (e) {}
-    }
-    ALUNOS.forEach((aluno, index) => {
-        if (index > 0) doc.addPage();
-        adicionarPaginaBoletim(doc, aluno, imgLogo);
-    });
-    doc.save('boletins_2026_todos_os_alunos.pdf');
+    const turmaId=document.getElementById('filtro-turma-boletim')?.value||'';
+    const termo=(document.getElementById('search-aluno-boletim')?.value||'').trim().toLocaleUpperCase('pt-BR');
+    const alunos=[...(db.alunosCadastro||[])].filter(a=>(!turmaId||a.turmaId===turmaId)&&(!termo||a.nome.toLocaleUpperCase('pt-BR').includes(termo))).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(a=>a.nome);
+    if(!alunos.length)return alert('NENHUM ALUNO ENCONTRADO PARA EXPORTAR.');
+    const turma=turmaId?(db.turmas||[]).find(t=>t.id===turmaId):null;
+    const nome=turma?`boletins_turma_${String(turma.codigo||turma.ano||'turma').replace(/[^a-z0-9_-]/gi,'_')}_${CONFIG.ano}.pdf`:`boletins_filtrados_${CONFIG.ano}.pdf`;
+    criarPDFBoletins(alunos).save(nome);
 }
+async function exportarBoletinsPorTurma() {
+    const grupos=[...(db.turmas||[])].sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt-BR')).map(t=>({turma:t,alunos:(db.alunosCadastro||[]).filter(a=>a.turmaId===t.id).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')).map(a=>a.nome)})).filter(g=>g.alunos.length);
+    if(!grupos.length)return alert('NÃO HÁ ALUNOS CADASTRADOS NAS TURMAS.');
+    if(window.JSZip){const zip=new JSZip();grupos.forEach(g=>{const code=String(g.turma.codigo||g.turma.ano||'turma').replace(/[^a-z0-9_-]/gi,'_');zip.file(`boletins_turma_${code}_${CONFIG.ano}.pdf`,criarPDFBoletins(g.alunos).output('arraybuffer'));});const blob=await zip.generateAsync({type:'blob'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`boletins_por_turma_${CONFIG.ano}.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+    else {alert('A biblioteca de compactação não carregou. Os PDFs serão gerados separadamente.');grupos.forEach((g,i)=>setTimeout(()=>{const code=String(g.turma.codigo||g.turma.ano||'turma').replace(/[^a-z0-9_-]/gi,'_');criarPDFBoletins(g.alunos).save(`boletins_turma_${code}_${CONFIG.ano}.pdf`);},i*700));}
+}
+
 function gerarBoletimPDF(aluno) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
+    const doc = new jsPDF('p', 'mm', 'a4');
     
     let imgLogo = null;
     const imgEl = document.getElementById('img-brasao-base64');

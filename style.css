@@ -2509,8 +2509,8 @@ select option,.disciplina-card,.disciplina-card *,.materia-header-banner,.materi
 /* IDENTIDADE VISUAL OFICIAL — V 3.0.4 */
 .portal-brand-logo {
     display: block;
-    width: min(100%, 270px);
-    max-height: 68px;
+    width: min(100%, 185px);
+    max-height: 46px;
     object-fit: contain;
     object-position: left center;
     margin-top: 10px;
@@ -2518,5 +2518,16 @@ select option,.disciplina-card,.disciplina-card *,.materia-header-banner,.materi
     border-radius: 6px;
 }
 @media (max-width: 600px) {
-    .portal-brand-logo { width: min(100%, 210px); max-height: 52px; }
+    .portal-brand-logo { width: min(100%, 150px); max-height: 38px; }
 }
+
+/* V 3.0.4 — campos compactos no Resultado por Etapas */
+#screen-portal-resultado-etapa .portal-results-table input,
+#screen-portal-resultado-etapa .portal-inline-fields input,
+#screen-portal-resultado-etapa .portal-term-rec {
+  width: 48px !important; min-width: 44px !important; max-width: 48px !important;
+  height: 28px !important; min-height: 28px !important; padding: 2px 4px !important;
+  font-size: .78rem !important; text-align: center !important;
+}
+#screen-portal-resultado-etapa .portal-inline-fields { gap: 5px !important; }
+#screen-portal-resultado-etapa .portal-inline-fields label { font-size: .62rem !important; gap: 3px !important; }
