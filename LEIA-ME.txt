@@ -101,3 +101,9 @@ VERSÃO 4.0.0 — AJUSTES SOLICITADOS
 - Frequência por data agora alimenta as faltas de cada disciplina conforme as aulas cadastradas no horário específico da turma; os relatórios também mantêm compatibilidade com lançamentos antigos.
 - A nota personalizada, quando preenchida, substitui a nota das avaliações como nota da etapa e prevalece no boletim.
 - Mantida a estrutura visual e funcional do boletim oficial.
+
+AJUSTE VISUAL DO BOLETIM — REVISÃO DA VERSÃO 4.0.0
+- O boletim individual em PDF recebeu um novo layout A4, com cabeçalho institucional, identificação do estudante em destaque, cores sóbrias e áreas de assinatura e observações mais organizadas.
+- Foram mantidas as mesmas 12 colunas do modelo de referência: disciplina; nota e faltas de cada um dos quatro bimestres; total de faltas; conceito final; situação.
+- As notas abaixo de 60% do referencial bimestral continuam destacadas em vermelho.
+- As regras de cálculo, a prevalência da nota personalizada e os dados do sistema foram preservados.

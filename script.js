@@ -2258,50 +2258,73 @@ function obterFichaRendimentoAluno(aluno) {
 }
 
 function adicionarPaginaBoletim(doc, aluno, imgLogo) {
-    // Modelo oficial: BOLETIM ESCOLAR - ANOS FINAIS, conforme PDF fornecido.
-    const W=210, H=297;
-    doc.setPage(doc.getNumberOfPages());
-    doc.setDrawColor(35,35,35); doc.setLineWidth(.25); doc.rect(7,7,196,283);
-    if(imgLogo) doc.addImage(imgLogo,'PNG',10,9,17,19);
-    doc.setFont('helvetica','bold'); doc.setFontSize(11);
-    doc.text('BOLETIM ESCOLAR - ANOS FINAIS',105,14,{align:'center'});
-    doc.setFontSize(8.5); doc.text('SECRETARIA MUNICIPAL DE EDUCAÇÃO',105,20,{align:'center'});
-    doc.text('ABRE CAMPO - MG',105,25,{align:'center'});
-    doc.setFontSize(7.2); doc.setFont('helvetica','normal');
-    doc.text('EM DR CUSTÓDIO DE PAULA RODRIGUES',30,31);
-    doc.line(30,32,198,32);
-    doc.text('ESCOLA: EM DR CUSTÓDIO DE PAULA RODRIGUES',8,39);
-    doc.line(8,40,202,40);
-    doc.text('ENDEREÇO: POVOADO DA APARECIDA, SN, ABRE CAMPO, MINAS GERAIS',8,45);
-    doc.line(8,46,202,46);
-    const cadastro=getCadastroAluno(aluno);
-    const cell=(x,y,w,h,txt,opts={})=>{doc.rect(x,y,w,h);doc.setFont('helvetica',opts.bold?'bold':'normal');doc.setFontSize(opts.size||7);doc.text(String(txt??''),x+(opts.pad||1.5),y+h/2+1.8,{maxWidth:w-3,align:opts.align||'left'});};
-    cell(8,49,145,5.5,`Aluno: ${aluno}`);
-    cell(153,49,49,5.5,`Ano: ${CONFIG.ano}`);
-    cell(8,54.5,194,5,`Nível de ensino: Ensino Fundamental`);
-    cell(8,59.5,58,5,`Turno: MATUTINO`);
-    const turmaAluno = obterTurmaCadastroAluno(aluno);
-    cell(66,59.5,48,5,`Turma: ${turmaAluno.codigo || turmaAluno.nome}`);
-    cell(114,59.5,88,5,`Ano de escolaridade: ${turmaAluno.ano || 'Ensino Fundamental'}`);
-    cell(8,64.5,194,5.5,'RESULTADO DA AVALIAÇÃO DA APRENDIZAGEM',{bold:true,align:'center',size:8});
-    const ficha=obterFichaRendimentoAluno(aluno);
+    // Boletim redesenhado: visual elegante, mantendo as 12 colunas do modelo oficial.
+    const navy=[25,48,72], teal=[35,91,103], gold=[190,151,78], pale=[239,245,246], ink=[42,52,60], muted=[95,108,116];
+    const cadastro=getCadastroAluno(aluno), turmaAluno=obterTurmaCadastroAluno(aluno), ficha=obterFichaRendimentoAluno(aluno);
+    const cell=(x,y,w,h,txt,opts={})=>{
+        if(opts.fill){doc.setFillColor(...opts.fill);doc.rect(x,y,w,h,'F');}
+        doc.setDrawColor(...(opts.line||[210,219,222]));doc.setLineWidth(opts.lineWidth||.18);doc.rect(x,y,w,h);
+        doc.setFont('helvetica',opts.bold?'bold':'normal');doc.setFontSize(opts.size||7);doc.setTextColor(...(opts.color||ink));
+        const lines=doc.splitTextToSize(String(txt??''),w-(opts.pad||2)*2);
+        const lineH=(opts.size||7)*.42;const blockH=lines.length*lineH;
+        doc.text(lines,x+(opts.pad||2)+(opts.align==='center'? (w-(opts.pad||2)*2)/2:0),y+h/2+lineH*.32-blockH/2,{align:opts.align||'left',maxWidth:w-(opts.pad||2)*2});
+    };
+    const W=210;
+    doc.setFillColor(255,255,255);doc.rect(0,0,W,297,'F');
+    doc.setDrawColor(...navy);doc.setLineWidth(.65);doc.roundedRect(7,7,196,283,2,2,'S');
+    // Cabeçalho institucional
+    doc.setFillColor(...navy);doc.roundedRect(8,8,194,29,1.5,1.5,'F');
+    doc.setFillColor(...gold);doc.rect(8,35.5,194,1.5,'F');
+    if(imgLogo){try{doc.addImage(imgLogo,'PNG',12,11,18,21);}catch(e){}}
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(12);
+    doc.text('BOLETIM ESCOLAR',105,17,{align:'center'});
+    doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('ANOS FINAIS  |  SECRETARIA MUNICIPAL DE EDUCAÇÃO',105,23,{align:'center'});
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text('ABRE CAMPO  •  MINAS GERAIS',105,30,{align:'center'});
+    doc.setTextColor(...ink);doc.setFont('helvetica','bold');doc.setFontSize(7);
+    doc.text('EM DR. CUSTÓDIO DE PAULA RODRIGUES',10,43);
+    doc.setFont('helvetica','normal');doc.setTextColor(...muted);doc.setFontSize(6.5);
+    doc.text('POVOADO DA APARECIDA, S/N  •  ABRE CAMPO – MG',10,48);
+    // Identificação do estudante
+    cell(9,53,137,9,`ESTUDANTE  |  ${aluno}`,{fill:pale,bold:true,size:8,color:navy,line:[195,210,215]});
+    cell(146,53,55,9,`ANO LETIVO  |  ${CONFIG.ano}`,{fill:pale,bold:true,size:7.5,color:navy,line:[195,210,215]});
+    cell(9,62,192,7,`NÍVEL DE ENSINO  |  ENSINO FUNDAMENTAL`,{size:7,color:muted});
+    cell(9,69,58,7,`TURNO  |  MATUTINO`,{size:6.5});
+    cell(67,69,49,7,`TURMA  |  ${turmaAluno.codigo||turmaAluno.nome}`,{size:6.5});
+    cell(116,69,85,7,`ANO DE ESCOLARIDADE  |  ${turmaAluno.ano||'ENSINO FUNDAMENTAL'}`,{size:6.5});
+    // Título da tabela
+    doc.setFillColor(...teal);doc.roundedRect(9,80,192,8,1,1,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('RESULTADO DA AVALIAÇÃO DA APRENDIZAGEM',105,85.3,{align:'center'});
+    // As colunas permanecem iguais às do boletim oficial (12 colunas).
     const rows=DISCIPLINAS.map(m=>{const f=ficha[m];return [m,f.somas[1].toFixed(1),String(f.faltas[1]),f.somas[2].toFixed(1),String(f.faltas[2]),f.somas[3].toFixed(1),String(f.faltas[3]),f.somas[4].toFixed(1),String(f.faltas[4]),String(f.totalFaltas),f.media.toFixed(1),f.situacao];});
-    doc.autoTable({startY:70,margin:{left:8,right:8},head:[['Disciplina','1º Bimestre','Faltas','2º Bimestre','Faltas','3º Bimestre','Faltas','4º Bimestre','Faltas','Total de faltas','Conceito final','Situação (Aprovado, EIR, PP)']],body:rows,theme:'grid',styles:{font:'helvetica',fontSize:6.1,cellPadding:1.5,lineWidth:.18,lineColor:[30,30,30],textColor:[0,0,0],halign:'center',valign:'middle'},headStyles:{fillColor:[255,255,255],textColor:[0,0,0],fontStyle:'bold',fontSize:5.8},
-        didParseCell:function(data){if(data.section!=='body')return;const idx=data.column.index,val=Number(String(data.cell.raw??'').replace(',','.'));if([1,3,5,7,10].includes(idx)&&Number.isFinite(val)&&val<15)data.cell.styles.textColor=[220,0,0];},
-        columnStyles:{0:{cellWidth:39,halign:'left'},1:{cellWidth:13},2:{cellWidth:10},3:{cellWidth:13},4:{cellWidth:10},5:{cellWidth:13},6:{cellWidth:10},7:{cellWidth:13},8:{cellWidth:10},9:{cellWidth:13},10:{cellWidth:15},11:{cellWidth:20}}});
-    let y=Math.max(doc.lastAutoTable.finalY+2,150);
-    cell(8,y,194,5,'RESPONSÁVEL PELO ALUNO',{bold:true,align:'center'});
-    y+=5; cell(8,y,48,6,'BIMESTRE',{align:'center'});cell(56,y,28,6,'DATA',{align:'center'});cell(84,y,118,6,'ASSINATURA',{align:'center'});
-    [['1º','25/04/2026'],['2º','08/07/2026'],['3º','29/09/2026'],['4º','16/12/2026']].forEach((r,i)=>{y+=6;cell(8,y,48,6,r[0],{align:'center'});cell(56,y,28,6,r[1],{align:'center'});cell(84,y,118,6,'');});
-    y+=9; doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('ORIENTAÇÕES:',10,y);y+=6;
-    doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.text('1 - Frequência mínima para promoção: 75%',10,y);y+=6;
-    doc.text('2 - Referenciais bimestrais para o 6º ao 9º ano:',10,y);y+=5;
-    doc.setFont('helvetica','normal');['1º BIMESTRE                 25.0','2º BIMESTRE                 25.0','3º BIMESTRE                 25.0','4º BIMESTRE                 25.0'].forEach(t=>{doc.text(t,12,y);y+=4;});
-    y+=3;doc.setFont('helvetica','bold');doc.text('EIR – Estudos Independentes de Recuperação:',10,y);doc.setFont('helvetica','normal');doc.text(' atividades de recuperação ao final do ano letivo para estudante que não atingiu 60% do aproveitamento anual. As atividades totalizam 100 pontos, sendo necessários 60 pontos para aprovação.',83,y,{maxWidth:115});y+=13;
-    doc.setFont('helvetica','bold');doc.text('PP – Progressão Parcial:',10,y);doc.setFont('helvetica','normal');doc.text(' permite promoção ao ano seguinte com pendências em disciplinas, conforme normas vigentes.',65,y,{maxWidth:133});
-    y=Math.min(Math.max(y+12,245),265);cell(8,y,194,31,'OBSERVAÇÕES:',{bold:true,size:7});
+    const head1=[['DISCIPLINA',{content:'1º BIMESTRE',colSpan:2},{content:'2º BIMESTRE',colSpan:2},{content:'3º BIMESTRE',colSpan:2},{content:'4º BIMESTRE',colSpan:2},'TOTAL DE\nFALTAS','CONCEITO\nFINAL','SITUAÇÃO']];
+    const head2=[['','NOTA','FALTAS','NOTA','FALTAS','NOTA','FALTAS','NOTA','FALTAS','','','']];
+    doc.autoTable({startY:89,margin:{left:9,right:9},head:[...head1,...head2],body:rows,theme:'grid',
+        styles:{font:'helvetica',fontSize:6.2,cellPadding:1.65,lineWidth:.2,lineColor:[205,216,220],textColor:ink,halign:'center',valign:'middle',minCellHeight:7},
+        headStyles:{fillColor:navy,textColor:[255,255,255],fontStyle:'bold',fontSize:5.9,halign:'center',valign:'middle',cellPadding:1.5},
+        alternateRowStyles:{fillColor:[247,250,250]},
+        columnStyles:{0:{cellWidth:42,halign:'left',fontStyle:'bold'},1:{cellWidth:13},2:{cellWidth:11},3:{cellWidth:13},4:{cellWidth:11},5:{cellWidth:13},6:{cellWidth:11},7:{cellWidth:13},8:{cellWidth:11},9:{cellWidth:14},10:{cellWidth:16},11:{cellWidth:24}},
+        didParseCell(data){if(data.section==='body'){const idx=data.column.index,val=Number(String(data.cell.raw??'').replace(',','.'));if([1,3,5,7,10].includes(idx)&&Number.isFinite(val)&&val<15){data.cell.styles.textColor=[184,45,45];data.cell.styles.fontStyle='bold';}if(idx===11){data.cell.styles.fontStyle='bold';if(String(data.cell.raw).toLocaleLowerCase('pt-BR').includes('recuper'))data.cell.styles.textColor=[184,105,35];}}}
+    });
+    let y=doc.lastAutoTable.finalY+5;
+    // Área de ciência do responsável
+    doc.setFillColor(...pale);doc.roundedRect(9,y,192,7,1,1,'F');doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(7.2);doc.text('ACOMPANHAMENTO DO RESPONSÁVEL',105,y+4.7,{align:'center'});y+=7;
+    cell(9,y,42,6,'BIMESTRE',{fill:[246,248,249],bold:true,align:'center',size:6.3});cell(51,y,28,6,'DATA',{fill:[246,248,249],bold:true,align:'center',size:6.3});cell(79,y,122,6,'ASSINATURA',{fill:[246,248,249],bold:true,align:'center',size:6.3});
+    [['1º','25/04/2026'],['2º','08/07/2026'],['3º','29/09/2026'],['4º','16/12/2026']].forEach(r=>{y+=6;cell(9,y,42,6,r[0],{align:'center',size:6.5});cell(51,y,28,6,r[1],{align:'center',size:6.5});cell(79,y,122,6,'');});
+    y+=8;
+    // Orientações em bloco compacto e legível
+    doc.setFillColor(248,249,247);doc.roundedRect(9,y,192,Math.max(43,Math.min(54,266-y)),1.5,1.5,'F');
+    doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('ORIENTAÇÕES',13,y+6);
+    doc.setTextColor(...ink);doc.setFontSize(6.2);doc.text('Frequência mínima para promoção: 75%.',13,y+12);
+    doc.text('Referenciais bimestrais para o 6º ao 9º ano: 25 pontos por bimestre.',13,y+17);
+    doc.setFont('helvetica','normal');doc.setFontSize(5.8);
+    doc.text('EIR – Estudos Independentes de Recuperação: atividades ao final do ano letivo para estudante que não atingiu 60% do aproveitamento anual. São necessários 60 pontos, de um total de 100, para aprovação.',13,y+23,{maxWidth:182});
+    doc.text('PP – Progressão Parcial: permite a promoção ao ano seguinte com pendências em disciplinas, conforme as normas vigentes.',13,y+33,{maxWidth:182});
+    // Campo de observações com espaço reservado
+    const obsY=271;doc.setDrawColor(195,207,211);doc.setLineWidth(.25);doc.roundedRect(9,obsY,192,15,1,1,'S');
+    doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.text('OBSERVAÇÕES',13,obsY+5);
+    doc.setDrawColor(225,231,233);doc.line(13,obsY+10,197,obsY+10);
 }
-
 function obterLogoBoletim() {
     let imgLogo=null; const imgEl=document.getElementById('img-brasao-base64');
     if(imgEl&&imgEl.complete&&imgEl.naturalWidth){try{const canvas=document.createElement('canvas');canvas.width=imgEl.naturalWidth;canvas.height=imgEl.naturalHeight;canvas.getContext('2d').drawImage(imgEl,0,0);imgLogo=canvas.toDataURL('image/png');}catch(e){}}
