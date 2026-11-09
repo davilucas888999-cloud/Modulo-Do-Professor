@@ -1,9 +1,9 @@
-PORTAL DO PROFESSOR — ATUALIZAÇÃO ADMINISTRATIVA V2
+PORTAL DO PROFESSOR — VERSÃO 3.0.4
 EM DR. CUSTÓDIO DE PAULA RODRIGUES — ABRE CAMPO/MG
 
 ARQUIVOS DO PACOTE
-- index.html: estrutura das telas e navegação.
-- style.css: estilos originais preservados e camada visual administrativa.
+- index.html: estrutura das telas e navegação, identificação V 3.0.4 e aplicação das logos oficiais.
+- style.css: estilos originais preservados, ajustes compactos da aba Resultado da Avaliação e identidade visual.
 - script.js: motor original do sistema, com proteção adicional de armazenamento e restauração.
 - portal-extensions.js: extensão de turmas, estudantes, importação/exportação e compatibilidade com os fluxos anteriores.
 - portal-v2.js: novos módulos de frequência por calendário, avaliações, resultados, períodos letivos, disciplinas e horário por turma.
@@ -40,7 +40,7 @@ ATENÇÃO SOBRE OS DADOS
 - A frequência nova é armazenada por data. Relatórios legados que consultam o antigo formato semanal não são automaticamente convertidos para o novo calendário.
 - O novo cadastro de avaliação/resultados utiliza seus próprios registros no banco. As telas antigas de lançamento de atividades foram preservadas para manter compatibilidade, mas não há migração automática de todas as avaliações antigas para a nova listagem.
 - Para preservar dados, exporte regularmente o backup JSON. A importação de backup substitui os dados locais após confirmação.
-- O brasão/logo oficial não foi fornecido com os arquivos de código. Se brasao.png não estiver na pasta, o espaço da imagem será ocultado.
+- Identidade visual incluída no pacote: brasao.jpg (brasão municipal/escolar) e logo-portal.jpg (marca Portal do Professor). Mantenha os dois arquivos na mesma pasta do index.html.
 
 VALIDAÇÕES REALIZADAS NESTA ENTREGA
 - node --check executado com sucesso em script.js, portal-extensions.js e portal-v2.js.
@@ -49,7 +49,7 @@ VALIDAÇÕES REALIZADAS NESTA ENTREGA
 - Não foi possível concluir teste visual automatizado em navegador nesta execução. Portanto, os fluxos precisam ser conferidos em uma cópia de teste antes do uso com dados reais.
 
 
-VERSÃO 3.0.2 — acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
+VERSÃO 3.0.4 — cadastro de estudantes iniciado vazio; removidos os cadastros e lançamentos individuais anteriores na primeira abertura desta versão. Acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
 
 
 REVISÃO 3.0.2
@@ -70,3 +70,15 @@ REVISÃO 3.0.2
 - Campos de notas mais compactos e campos bloqueados em cinza claro.
 - Salvamento com tela de carregamento e retorno automático ao início.
 - Frequência passa a carregar automaticamente ao preencher etapa, turma, forma e período; botão BUSCAR removido.
+
+
+REVISÃO 3.0.4
+- Identificação do sistema atualizada para V 3.0.4.
+- Cadastro de estudantes inicia vazio; a primeira abertura desta versão remove os estudantes existentes e os lançamentos individuais associados, preservando turmas, disciplinas e configurações gerais.
+
+
+IDENTIDADE E LIMPEZA — VERSÃO 3.0.4
+- Identificação do sistema: PORTAL DO PROFESSOR • VERSÃO 3.0.4.
+- Brasão de Abre Campo aplicado no menu, cabeçalho e boletim PDF.
+- Logo Portal do Professor aplicada no cabeçalho da tela inicial.
+- Na primeira abertura desta revisão, todos os alunos cadastrados e os lançamentos individuais vinculados são removidos. Turmas, disciplinas e configurações gerais são preservadas.

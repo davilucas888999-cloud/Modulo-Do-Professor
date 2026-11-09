@@ -12,16 +12,7 @@ const CONFIG = {
     passingScorePct: 0.60 // Média institucional de 60% para definição das cores
 };
 
-const ALUNOS_INICIAIS = [
-    "ADRIELE APARECIDA MENDES ARAUJO", "ANA JULIA SILVA DE LAIA", "DAVI LUCAS PAULINO DA COSTA",
-    "EMANUELLY CRISTINA DA COSTA LEVINO", "FABIELLY HIGINO DIAS", "GABRIEL COTTA QUEIROZ",
-    "GLENO HENRIQUE MARTINS GOMES DE MIRANDA", "HANIELE PEREIRA ALVES", "IKARO EMANUEL DE LIMA MIRANDA",
-    "JONATAS PASSOS BRAGA", "JÚLIA DA SILVA LOBATO", "LAYANE APARECIDA MENDES FERNANDES",
-    "LUAN FERNANDO SILVA FIALHO", "LUIS OTAVIO DA COSTA VITOR", "MARIA EDUARDA CHAVES LIMA",
-    "MARIA EDUARDA PEREIRA DE LIMA", "MARIA LUISA MENDES OLIVEIRA", "MARIA OLIVIA SILVA CHAVES",
-    "MARIA SOPHIA FERNANDES DE SOUZA", "NATHAN MIRANDA ALVES", "NICOLE DE OLIVEIRA LIMA",
-    "WESLEY COTA BERNARDES", "YASMIN DOS SANTOS FERREIRA"
-];
+const ALUNOS_INICIAIS = [];
 
 // Cadastro oficial da turma: a ordem do array é a ordem de chamada/matrícula.
 let ALUNOS = [];
@@ -90,6 +81,35 @@ function gerarNumeroMatricula(ano, ordem) {
 
 function obterDataMatriculaInicial(aluno) {
     return DATAS_MATRICULA_INICIAIS[aluno] || "05/02/2024";
+}
+
+function aplicarLimpezaInicialV304() {
+    // Executa uma única vez ao atualizar para a V 3.0.4: remove estudantes e
+    // lançamentos vinculados a eles, preservando turmas, disciplinas e configurações.
+    if (db.versaoSistema === "3.0.4-identidade-oficial") return;
+    db.alunosCadastro = [];
+    ALUNOS = [];
+    if (db.disciplinas && typeof db.disciplinas === 'object') {
+        Object.values(db.disciplinas).forEach(disc => {
+            if (!disc || typeof disc !== 'object') return;
+            disc.recuperacaoAnual = {};
+            [1, 2, 3, 4].forEach(b => {
+                const etapa = disc[b];
+                if (!etapa || typeof etapa !== 'object') return;
+                (etapa.atividades || []).forEach(atv => { atv.notas = {}; });
+                etapa.recuperacaoBimestral = {};
+                etapa.faltas = {};
+            });
+        });
+    }
+    db.faltasDiarias = {};
+    db.faltasPorDisciplina = {};
+    db.resultadosAvaliacoes = {};
+    db.notasPersonalizadas = {};
+    db.resultadosEtapa = {};
+    db.frequenciaCalendario = {};
+    db.versaoSistema = "3.0.4-identidade-oficial";
+    saveStorage();
 }
 
 function inicializarCadastroAlunos() {
@@ -930,6 +950,7 @@ function initDatabaseEngine() {
         saveStorage();
     }
 
+    aplicarLimpezaInicialV304();
     inicializarCadastroAlunos();
     garantirEstruturaFaltas();
     if (!db.aulasPorDia) db.aulasPorDia = {};
