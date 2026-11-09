@@ -1,4 +1,4 @@
-PORTAL DO PROFESSOR — VERSÃO 4.0.0
+PORTAL DO PROFESSOR — VERSÃO 4.1.0
 EM DR. CUSTÓDIO DE PAULA RODRIGUES — ABRE CAMPO/MG
 
 ARQUIVOS DO PACOTE
@@ -107,3 +107,11 @@ AJUSTE VISUAL DO BOLETIM — REVISÃO DA VERSÃO 4.0.0
 - Foram mantidas as mesmas 12 colunas do modelo de referência: disciplina; nota e faltas de cada um dos quatro bimestres; total de faltas; conceito final; situação.
 - As notas abaixo de 60% do referencial bimestral continuam destacadas em vermelho.
 - As regras de cálculo, a prevalência da nota personalizada e os dados do sistema foram preservados.
+
+
+VERSÃO 4.1.0 — AVALIAÇÕES E BOLETIM
+- Cadastro de avaliações com seleção múltipla de turmas e disciplinas em caixas lado a lado. Cada combinação turma/disciplina gera uma linha independente, permitindo edição individual.
+- Lançamento de nota personalizada liberado mesmo quando não há avaliações cadastradas; nesse cenário, a grade exibe apenas Nota Personalizada e Resultados.
+- Após salvar resultados, a grade da turma/disciplina selecionada é atualizada imediatamente, sem exigir troca de turma para recarregar os dados.
+- Boletim individual reconstruído em A4, com cabeçalho institucional, identificação do estudante, tabela acadêmica de 12 colunas, acompanhamento do responsável, orientações e observações.
+- Preservados os dados essenciais, a regra de nota personalizada prevalecendo sobre a nota de avaliações e o destaque em vermelho para notas inferiores a 60%.
