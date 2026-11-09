@@ -47,6 +47,7 @@
                 <li onclick="navigate('boletim-individual')"><i class="fas fa-file-lines"></i> Boletins</li>
                 <li class="nav-section-label">CONFIGURAÇÕES</li>
                 <li onclick="portalAbrirConfiguracoes()"><i class="fas fa-sliders"></i> Configurações gerais</li>
+                <li onclick="portalAbrirPeriodos()"><i class="fas fa-calendar-range"></i> Períodos dos bimestres</li>
                 <li onclick="portalAbrirImportacao()"><i class="fas fa-file-import"></i> Importação de dados</li>
                 <li onclick="navigate('backup')"><i class="fas fa-file-export"></i> Exportação de dados</li>
                 <li onclick="navigate('backup')"><i class="fas fa-database"></i> Backup e restauração</li>
@@ -55,7 +56,7 @@
             </ul>
         </nav>
         <div class="sidebar-footer">
-            <span>PORTAL DO PROFESSOR • VERSÃO 3.0.0</span>
+            <span>PORTAL DO PROFESSOR • VERSÃO 3.0.1</span>
         </div>
     </div>
 
@@ -78,15 +79,6 @@
                 </div>
             </div>
             
-            <div class="lancamento-flutuante lancamento-inicial">
-                <div class="lancamento-kicker">CENTRAL DE LANÇAMENTOS</div>
-                <h3>LANÇAMENTOS</h3>
-                <div id="lancamento-seletor-home" class="lancamento-seletor-home"></div>
-                <div id="lancamento-inline-resultado" class="lancamento-result-area"></div>
-            </div>
-
-            <!-- O lançamento continua abaixo, no mesmo espaço da tela inicial. -->
-            <div id="lancamento-inline-area" class="lancamento-inline-area" style="display:none;"></div>
         </div>
 
         <!-- TELA: CADASTRO DE ALUNOS -->
@@ -562,7 +554,7 @@
         <div id="screen-portal-config" class="screen">
             <button class="btn-back" onclick="navigate('home')"><i class="fas fa-chevron-left"></i> Voltar ao Início</button>
             <div class="table-meta-header"><h3><i class="fas fa-sliders"></i> Configurações Gerais</h3><p class="sub-meta">Parâmetros institucionais e informações de armazenamento.</p></div>
-            <div class="card-box"><p><strong>INSTITUIÇÃO:</strong> EM DR. CUSTÓDIO DE PAULA RODRIGUES</p><p><strong>MUNICÍPIO:</strong> ABRE CAMPO – MINAS GERAIS</p><p><strong>ARMAZENAMENTO:</strong> LocalStorage do navegador e dispositivo atual.</p><p class="sub-meta" style="margin-top:12px">Os dados não são sincronizados automaticamente entre dispositivos. Exporte backups regularmente e mantenha uma cópia segura.</p><div class="portal-form-actions"><div class="portal-form-actions"><button class="btn-submit-action" onclick="exportBackup()"><i class="fas fa-download"></i> EXPORTAR TODOS OS DADOS (JSON)</button><button type="button" class="btn-secondary-action" onclick="document.getElementById('file-upload-input').click()"><i class="fas fa-upload"></i> IMPORTAR DADOS DO SISTEMA</button></div></div></div>
+            <div class="card-box"><p><strong>INSTITUIÇÃO:</strong> EM DR. CUSTÓDIO DE PAULA RODRIGUES</p><p><strong>MUNICÍPIO:</strong> ABRE CAMPO – MINAS GERAIS</p><p><strong>ARMAZENAMENTO:</strong> LocalStorage do navegador e dispositivo atual.</p><p class="sub-meta" style="margin-top:12px">Os dados não são sincronizados automaticamente entre dispositivos. Exporte backups regularmente e mantenha uma cópia segura.</p><div class="portal-form-actions"><div class="portal-form-actions"><button class="btn-submit-action" onclick="exportBackup()"><i class="fas fa-download"></i> EXPORTAR TODOS OS DADOS (JSON)</button><button type="button" class="btn-secondary-action" onclick="document.getElementById('file-upload-input').click()"><i class="fas fa-upload"></i> IMPORTAR DADOS DO SISTEMA</button></div></div><section id="portal-period-settings"><h3>PERÍODOS DOS BIMESTRES</h3><p class="sub-meta">DEFINA A DATA DE INÍCIO E DE TÉRMINO DE CADA BIMESTRE. ESSES PERÍODOS CONTROLAM A LISTA DE DIAS PARA O LANÇAMENTO DE FREQUÊNCIA.</p><div class="period-config-grid"><div class="period-config-card"><h4>1º BIMESTRE</h4><div class="input-group"><label for="periodo-1-inicio">DATA DE INÍCIO</label><input id="periodo-1-inicio" type="date"></div><div class="input-group"><label for="periodo-1-fim">DATA DE TÉRMINO</label><input id="periodo-1-fim" type="date"></div></div><div class="period-config-card"><h4>2º BIMESTRE</h4><div class="input-group"><label for="periodo-2-inicio">DATA DE INÍCIO</label><input id="periodo-2-inicio" type="date"></div><div class="input-group"><label for="periodo-2-fim">DATA DE TÉRMINO</label><input id="periodo-2-fim" type="date"></div></div><div class="period-config-card"><h4>3º BIMESTRE</h4><div class="input-group"><label for="periodo-3-inicio">DATA DE INÍCIO</label><input id="periodo-3-inicio" type="date"></div><div class="input-group"><label for="periodo-3-fim">DATA DE TÉRMINO</label><input id="periodo-3-fim" type="date"></div></div><div class="period-config-card"><h4>4º BIMESTRE</h4><div class="input-group"><label for="periodo-4-inicio">DATA DE INÍCIO</label><input id="periodo-4-inicio" type="date"></div><div class="input-group"><label for="periodo-4-fim">DATA DE TÉRMINO</label><input id="periodo-4-fim" type="date"></div></div></div><div class="portal-form-actions"><button type="button" class="btn-submit-action" onclick="portalSalvarPeriodos()">SALVAR PERÍODOS</button></div></section></div>
         </div>
 
         <!-- TELA 9: MANUTENÇÃO E BACKUP -->
@@ -633,7 +625,7 @@
                 </div>
             </form>
         </div>
-        <div id="portal-system-version">PORTAL DO PROFESSOR • VERSÃO 3.0.0</div>
+        <div id="portal-system-version">PORTAL DO PROFESSOR • VERSÃO 3.0.1</div>
     </div>
 
     <!-- MODAL DE INSTRUÇÕES DE AJUDA -->

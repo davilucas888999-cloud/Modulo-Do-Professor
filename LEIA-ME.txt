@@ -49,4 +49,15 @@ VALIDAÇÕES REALIZADAS NESTA ENTREGA
 - Não foi possível concluir teste visual automatizado em navegador nesta execução. Portanto, os fluxos precisam ser conferidos em uma cópia de teste antes do uso com dados reais.
 
 
-VERSÃO 3.0.0 — acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
+VERSÃO 3.0.1 — acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
+
+
+REVISÃO 3.0.1
+- Removida a Central de Lançamentos da tela inicial.
+- Campos bloqueados/read-only agora aparecem em cinza claro.
+- Tabelas compactadas, com colunas de ordem e matrícula reduzidas.
+- Ajustado o cadastro e salvamento do horário por turma e disciplina.
+- Períodos dos quatro bimestres disponíveis nas Configurações e no menu lateral.
+- Seletor de período de faltas atualizado conforme semana, mês ou dia e datas do bimestre.
+- Nomes de disciplinas exibidos em caixa alta e data da matrícula sob o nome do estudante.
+- Menu lateral com rolagem independente.
