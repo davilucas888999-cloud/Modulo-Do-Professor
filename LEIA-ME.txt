@@ -1,8 +1,8 @@
-PORTAL DO PROFESSOR — VERSÃO 3.0.4
+PORTAL DO PROFESSOR — VERSÃO 4.0.0
 EM DR. CUSTÓDIO DE PAULA RODRIGUES — ABRE CAMPO/MG
 
 ARQUIVOS DO PACOTE
-- index.html: estrutura das telas e navegação, identificação V 3.0.4 e aplicação das logos oficiais.
+- index.html: estrutura das telas e navegação, identificação V 4.0.0 e aplicação das logos oficiais.
 - style.css: estilos originais preservados, ajustes compactos da aba Resultado da Avaliação e identidade visual.
 - script.js: motor original do sistema, com proteção adicional de armazenamento e restauração.
 - portal-extensions.js: extensão de turmas, estudantes, importação/exportação e compatibilidade com os fluxos anteriores.
@@ -49,7 +49,7 @@ VALIDAÇÕES REALIZADAS NESTA ENTREGA
 - Não foi possível concluir teste visual automatizado em navegador nesta execução. Portanto, os fluxos precisam ser conferidos em uma cópia de teste antes do uso com dados reais.
 
 
-VERSÃO 3.0.4 — cadastro de estudantes iniciado vazio; removidos os cadastros e lançamentos individuais anteriores na primeira abertura desta versão. Acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
+VERSÃO 4.0.0 — cadastro de estudantes iniciado vazio; removidos os cadastros e lançamentos individuais anteriores na primeira abertura desta versão. Acabamento grafite RAL 7024 (#474A50), campos de notas maiores, filtros embaixo dos rótulos, nome do estudante com data de matrícula nos módulos de lançamento/resultados, matrícula automática iniciando em 11111, configuração dos períodos dos quatro bimestres, frequência com seletor de semana/mês/dia condicionado ao tipo, grade de horário funcional por turma e navegação lateral rolável. Inclui backup JSON para importar/exportar todos os dados.
 
 
 REVISÃO 3.0.2
@@ -73,18 +73,18 @@ REVISÃO 3.0.2
 
 
 REVISÃO 3.0.4
-- Identificação do sistema atualizada para V 3.0.4.
+- Identificação do sistema atualizada para V 4.0.0.
 - Cadastro de estudantes inicia vazio; a primeira abertura desta versão remove os estudantes existentes e os lançamentos individuais associados, preservando turmas, disciplinas e configurações gerais.
 
 
-IDENTIDADE E LIMPEZA — VERSÃO 3.0.4
-- Identificação do sistema: PORTAL DO PROFESSOR • VERSÃO 3.0.4.
+IDENTIDADE E LIMPEZA — VERSÃO 4.0.0
+- Identificação do sistema: PORTAL DO PROFESSOR • VERSÃO 4.0.0.
 - Brasão de Abre Campo aplicado no menu, cabeçalho e boletim PDF.
 - Logo Portal do Professor aplicada no cabeçalho da tela inicial.
 - Na primeira abertura desta revisão, todos os alunos cadastrados e os lançamentos individuais vinculados são removidos. Turmas, disciplinas e configurações gerais são preservadas.
 
 
-ATUALIZAÇÃO DE AJUSTES — V 3.0.4
+ATUALIZAÇÃO DE AJUSTES — V 4.0.0
 - O boletim individual agora identifica a turma e o ano de escolaridade a partir do cadastro de cada estudante, sem usar a turma fixa 8º ANO - 800.
 - As notas abaixo de 60% do valor máximo ficam destacadas em vermelho nos resultados das avaliações, resultados por etapa e no boletim PDF.
 - O cadastro de avaliações permite excluir uma avaliação, com confirmação e remoção dos resultados vinculados a ela.
@@ -92,3 +92,12 @@ ATUALIZAÇÃO DE AJUSTES — V 3.0.4
 - É possível exportar os boletins filtrados em um PDF e baixar um ZIP com um PDF separado para cada turma.
 - Os nomes dos estudantes e das turmas são apresentados em ordem alfabética.
 - O boletim passa a considerar as notas do módulo novo de avaliações quando houver avaliações cadastradas para a turma, disciplina e bimestre.
+
+
+VERSÃO 4.0.0 — AJUSTES SOLICITADOS
+- Removidos os botões BUSCAR dos módulos Resultado da Avaliação e Resultado por Etapa; os resultados carregam automaticamente ao selecionar os filtros.
+- Exibida tela de carregamento ao alterar seleções nos módulos de frequência, resultados, horário e filtro do boletim.
+- Notas abaixo de 60% continuam destacadas em vermelho nos campos de nota.
+- Frequência por data agora alimenta as faltas de cada disciplina conforme as aulas cadastradas no horário específico da turma; os relatórios também mantêm compatibilidade com lançamentos antigos.
+- A nota personalizada, quando preenchida, substitui a nota das avaliações como nota da etapa e prevalece no boletim.
+- Mantida a estrutura visual e funcional do boletim oficial.

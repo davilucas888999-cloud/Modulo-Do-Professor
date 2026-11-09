@@ -766,7 +766,21 @@ function salvarGradeAulas(){
 function contarAulasDisciplinaNoDia(b,disciplina,dia){return(db.gradeAulas?.[b]?.[dia]||[]).filter(x=>x===disciplina).length;}
 function obterFaltaDia(b,dia,aluno){return Number(db.faltasDiarias?.[b]?.[dia]?.[aluno]||0);}
 function calcularFaltasDisciplinaDia(b,disciplina,dia,aluno){return obterFaltaDia(b,dia,aluno)*contarAulasDisciplinaNoDia(b,disciplina,dia);}
-function calcularFaltasDisciplinaBimestre(b,disciplina,aluno){return DIAS_SEMANA.reduce((t,[dia])=>t+calcularFaltasDisciplinaDia(b,disciplina,dia,aluno),0);}
+function calcularFaltasDisciplinaBimestre(b,disciplina,aluno){
+  const turmaId=getCadastroAluno(aluno)?.turmaId||'';
+  const registros=Object.entries(db.frequenciaCalendario?.[Number(b)]||{}).filter(([data,rec])=>rec&&Object.prototype.hasOwnProperty.call(rec,aluno));
+  if(registros.length){
+    return registros.reduce((total,[data,rec])=>{
+      if(rec[aluno]!==false)return total;
+      const weekday=new Date(data+'T12:00:00').getDay();
+      const dayKey=({1:'segunda',2:'terca',3:'quarta',4:'quinta',5:'sexta'})[weekday];
+      const aulas=db.horariosTurma?.[turmaId]?.[dayKey]||[];
+      const alvo=String(disciplina||'').trim().toLocaleUpperCase('pt-BR');
+      return total+aulas.filter(x=>String(x||'').trim().toLocaleUpperCase('pt-BR')===alvo).length;
+    },0);
+  }
+  return DIAS_SEMANA.reduce((t,[dia])=>t+calcularFaltasDisciplinaDia(b,disciplina,dia,aluno),0);
+}
 function salvarFaltasDiarias(){
  garantirEstruturaFaltas();const b=Number(document.getElementById('faltas-bimestre-select')?.value||0);if(!b){alert('Selecione o BIMESTRE antes de salvar o lançamento.');return;}
  ALUNOS.forEach(aluno=>DIAS_SEMANA.forEach(([dia])=>{const input=document.querySelector(`.falta-diaria-input[data-aluno="${CSS.escape(aluno)}"][data-dia="${dia}"]`);if(!input)return;let v=parseInt(String(input.value||'0').replace(',','.'),10);if(!Number.isFinite(v)||v<0)v=0;db.faltasDiarias[b][dia][aluno]=v;}));
@@ -804,7 +818,9 @@ function getResultadoFinalAluno(aluno){
     detalhes.totalFaltasAno=totalAulasFaltadas;
     // 200 dias letivos: cada falta diária lançada representa uma ausência em um dia.
     let faltasDiariasAno=0;
-    for(let b=1;b<=4;b++) DIAS_SEMANA.forEach(([dia])=>{ faltasDiariasAno+=obterFaltaDia(b,dia,aluno); });
+    const registrosCalendario=Object.values(db.frequenciaCalendario||{}).flatMap(etapa=>Object.values(etapa||{})).filter(rec=>rec&&Object.prototype.hasOwnProperty.call(rec,aluno));
+    if(registrosCalendario.length){faltasDiariasAno=registrosCalendario.filter(rec=>rec[aluno]===false).length;}
+    else {for(let b=1;b<=4;b++) DIAS_SEMANA.forEach(([dia])=>{ faltasDiariasAno+=obterFaltaDia(b,dia,aluno); });}
     detalhes.faltasDiariasAno=faltasDiariasAno;
     detalhes.presencaGeral=Math.max(0,100-(faltasDiariasAno/DIAS_LETIVOS_ANO*100));
     detalhes.recuperacaoFrequenciaGeral=detalhes.presencaGeral<75;
@@ -2196,6 +2212,8 @@ function notaEtapaBoletim(aluno, disciplina, bimestre) {
     const cadastro=getCadastroAluno(aluno), turmaId=cadastro.turmaId;
     const disciplinaKey=String(disciplina||'').trim().toLocaleUpperCase('pt-BR');
     const avaliacoes=(db.avaliacoes||[]).filter(a=>Number(a.etapa)===Number(bimestre)&&a.turmaId===turmaId&&String(a.disciplina||'').toLocaleUpperCase('pt-BR')===disciplinaKey);
+    const personalizada=(db.notasPersonalizadas||{})[`${bimestre}|${turmaId}|${disciplinaKey}|${aluno}`];
+    if(personalizada!==undefined&&String(personalizada).trim()!=='')return Number(Number(String(personalizada).replace(',','.')).toFixed(1));
     if(!avaliacoes.length) return getNotaFinalBimestre(disciplina,bimestre,aluno);
     let total=0;
     avaliacoes.forEach(a=>{
